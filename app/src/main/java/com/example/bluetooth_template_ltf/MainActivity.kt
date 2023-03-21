@@ -17,6 +17,9 @@ class MainActivity : BTActivityWrapper() {
     private val joystickMoveSubject = PublishSubject.create<Pair<Int, Int>>()
     private var prevAngle: Int = 0
     private var prevStrength: Int = 0
+    private var moveVertical = "0"
+    private var mode = "MANUAL"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,13 +32,18 @@ class MainActivity : BTActivityWrapper() {
                 connectBluetooth(binding.inputBluetooth.text.toString())
         }
 
+        binding.btnCamera.setOnClickListener {
+
+        }
+
         binding.joystickView.setOnMoveListener { angle, strength ->
             if(angle != prevAngle || strength != prevStrength) {
                 joystickMoveSubject.onNext(angle to strength)
                 prevAngle = angle;
                 prevStrength = strength;
             }
-        }
+
+
 
         joystickMoveSubject
             .debounce(100, TimeUnit.MILLISECONDS)
@@ -47,6 +55,14 @@ class MainActivity : BTActivityWrapper() {
 //                sendBluetoothMessage("$angle;$strength")
             }
 
+        binding.upButton.setOnClickListener {
+            moveVertical = "1"
+        }
+
+        binding.downButton.setOnClickListener {
+            moveVertical = "-1"
+        }
+
         // Ini buat check bluetooth connection,
         // lebih bagusnya kalau pake observables daripada
         // pake timer kek gini. But I value my time :D
@@ -55,12 +71,28 @@ class MainActivity : BTActivityWrapper() {
             override fun run() {
                 if(connected && !binding.joystickView.isEnabled) {
                     binding.joystickView.isEnabled = true
+                    binding.upButton.isEnabled = true
+                    binding.downButton.isEnabled = true
+                    binding.btnCamera.isEnabled = true
+
+                    if (mode == "MANUAL") {
+                        sendBluetoothMessage("MANUAL $angle;$strength;$moveVertical")
+                    } else if (mode == "AUTO") {
+                        sendBluetoothMessage("AUTO $angle;$strength;$moveVertical")
+                    }
+
                 } else if (!connected) {
                     binding.joystickView.isEnabled = false
+                    binding.upButton.isEnabled = false
+                    binding.downButton.isEnabled = false
+                    binding.btnCamera.isEnabled = false
                 }
-                mainHandler.postDelayed(this, 200)
+                mainHandler.postDelayed(this, 100)
             }
         })
+
+
+    }
     }
 
     override fun onMessageSent(message: String) {
@@ -68,5 +100,7 @@ class MainActivity : BTActivityWrapper() {
     }
 
     override fun onMessageReceived(message: String) {
+
     }
+
 }
