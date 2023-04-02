@@ -50,6 +50,8 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/btnConnect" />
 
+    <!--    Make up and down button in the right side of screen-->
+
     <io.github.controlwear.virtual.joystick.android.JoystickView
         android:id="@+id/joystickView"
         android:layout_width="200dp"
@@ -63,39 +65,21 @@
         app:JV_fixedCenter="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.097"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.497" />
+        app:layout_constraintVertical_bias="0.499" />
 
     <Button
-        android:id="@+id/btnCamera"
+        android:id="@+id/buttonCanvas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:text="Camera"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="308dp" />
+        android:layout_marginTop="64dp"
+        android:text="Canvas"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-<!--    Make up and down button in the right side of screen-->
-
-    <Button
-        android:id="@+id/upButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="132dp"
-        android:text="Up"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="528dp" />
-
-    <Button
-        android:id="@+id/downButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="224dp"
-        android:text="Down"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="528dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
