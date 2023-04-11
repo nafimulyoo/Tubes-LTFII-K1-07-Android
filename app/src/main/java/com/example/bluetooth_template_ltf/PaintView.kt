@@ -11,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.bluetooth_template_ltf.CanvasActivity.Companion.paintBrush
 import com.example.bluetooth_template_ltf.CanvasActivity.Companion.path
+import com.example.bluetooth_template_ltf.ESP32.Companion.sendMessageToESP32
+
 
 class PaintView : View {
 
@@ -34,7 +36,9 @@ class PaintView : View {
         constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
             setupDrawing()
         }
-//
+
+
+
         private fun setupDrawing() {
             paintBrush.isAntiAlias = true
             paintBrush.color = currentBrush
@@ -53,10 +57,10 @@ class PaintView : View {
             MotionEvent.ACTION_DOWN -> {
                 path.moveTo(x, y)
                 if (isDrawing) {
-                    (context as CanvasActivity).sendMessageToESP32("PEN_DOWN $x $y -")
+                    sendMessageToESP32("CANVAS PEN_DOWN $x $y 0")
                 }
                 else {
-                    (context as CanvasActivity).send
+                    sendMessageToESP32("CANVAS MOVE_XY $x $y 0")
                 }
                 return true
             }
@@ -65,21 +69,14 @@ class PaintView : View {
                 path.lineTo(x, y)
                 pathList.add(path)
                 colorList.add(currentBrush)
-                (context as CanvasActivity).sendBluetoothMessage("MOVE_XY $x $y -")
-                postInvalidate()
+                sendMessageToESP32("CANVAS MOVE_XY $x $y 0")
             }
 
             MotionEvent.ACTION_UP -> {
                 path.lineTo(x, y)
                 pathList.add(path)
                 colorList.add(currentBrush)
-                if (isDrawing) {
-                    (context as CanvasActivity).sendBluetoothMessage("PEN_UP $x $y -")
-                }
-                else {
-                    (context as CanvasActivity).sendBluetoothMessage("MOVE_XY $x $y -")
-                }
-
+                sendMessageToESP32("CANVAS PEN_UP $x $y 0")
             }
 
             else -> return false
