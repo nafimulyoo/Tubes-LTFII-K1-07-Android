@@ -11,12 +11,16 @@ import com.example.tugasbesar_ltfii_k1_07.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        lateinit var esp32: ESP32
+    }
+
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val esp32 = ESP32()
+        esp32 = ESP32(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
