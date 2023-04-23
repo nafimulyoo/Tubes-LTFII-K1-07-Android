@@ -9,13 +9,12 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import com.example.tugasbesar_ltfii_k1_07.MainActivity
 import com.example.tugasbesar_ltfii_k1_07.ui.canvas.CanvasFragment.Companion.paintBrush
 import com.example.tugasbesar_ltfii_k1_07.ui.canvas.CanvasFragment.Companion.path
 import com.example.tugasbesar_ltfii_k1_07.MainActivity.Companion.esp32
 
 
-class PaintView : View {
+class CanvasView : View {
 
         var params : ViewGroup.LayoutParams? = null
 

@@ -1,22 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.canvas.CanvasFragment">
 
-    <TextView
-        android:id="@+id/text_canvas"
+
+    <LinearLayout
+        android:id="@+id/canvasTopBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_alignParentTop="true"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:elevation="20dp"
+        >
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/paint_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_brush_24"
+                app:layout_anchor="@id/point_button"
+                android:layout_margin="6dp"
+                app:layout_anchorGravity="center_horizontal|bottom"
+                android:rotation="90"
+
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/point_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_point_24"
+                app:layout_anchor="@id/clear_button"
+                android:layout_margin="6dp"
+                app:layout_anchorGravity="center_horizontal|bottom"
+                android:rotation="90"
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/clear_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_clear_24"
+                app:layout_anchor="@id/down_button"
+                android:layout_margin="6dp"
+                app:layout_anchorGravity="center_horizontal|bottom"
+                android:rotation="90"
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/down_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_24"
+                app:layout_anchor="@id/up_button"
+
+                android:layout_marginLeft="36dp"
+                app:layout_anchorGravity="center_horizontal|bottom"
+                android:rotation="180"
+                />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/up_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_24"
+            android:layout_marginLeft="12dp"
+            app:layout_anchor="@id/up_button"
+            app:layout_anchorGravity="center_horizontal|bottom"
+            />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/canvasTopBar">
+
+        <include layout="@layout/canvas_view" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

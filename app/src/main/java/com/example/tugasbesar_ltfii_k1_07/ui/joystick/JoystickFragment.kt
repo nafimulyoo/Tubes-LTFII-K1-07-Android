@@ -22,16 +22,32 @@ class JoystickFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val joystickViewModel =
-            ViewModelProvider(this).get(JoystickViewModel::class.java)
+
+//        TODO: Tambah protokol komunikasi, buat looper
 
         _binding = FragmentJoystickBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+
         val textView: TextView = binding.textJoystick
-        joystickViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
+
+
+        val joystickView: JoystickView = binding.joystickView
+        joystickView.setOnMoveListener(object : JoystickView.OnMoveListener {
+            override fun onMove(dx: Float, dy: Float) {
+                textView.text = String.format("dx: %.2f, dy: %.2f", dx, dy)
+            }
+        })
+
+        val verticalJoystickView: VerticalJoystickView = binding.verticalJoystickView
+        verticalJoystickView.setOnMoveListener(object : VerticalJoystickView.OnMoveListener {
+            override fun onMove(dz: Float) {
+                // Handle vertical joystick movement
+                // position value will be between -1 and 1
+                textView.text = String.format("dz: %.2f", dz)
+            }
+        })
+
         return root
     }
 
