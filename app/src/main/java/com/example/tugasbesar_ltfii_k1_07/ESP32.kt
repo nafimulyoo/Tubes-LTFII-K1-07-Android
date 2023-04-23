@@ -5,6 +5,7 @@ import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -78,22 +79,28 @@ class ESP32(private val context: Context) {
         Toast.makeText(context, "IP address set to $serverAddress", Toast.LENGTH_SHORT).show()
     }
 
-
     fun sendMessage(message: String) {
         val espUrl = URL("http://$serverAddress/?message=$message")
         GlobalScope.launch(Dispatchers.IO) {
-            val connection = espUrl.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            val responseCode = connection.responseCode
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                // Request successful
-                val response = connection.inputStream.bufferedReader().readText()
-                println("Response from ESP32: $response")
-            } else {
-                // Request failed
-                println("Request failed with error code $responseCode")
+            try {
+                val connection = espUrl.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    // Request successful
+                    val response = connection.inputStream.bufferedReader().readText()
+                    println("Response from ESP32: $response")
+                } else {
+                    // Request failed
+                    println("Request failed with error code $responseCode")
+                }
+                connection.disconnect()
+            } catch (e: ConnectException) {
+                // Show Toast message indicating that the connection has failed
+                GlobalScope.launch(Dispatchers.Main) {
+                    Toast.makeText(context, "Failed to connect to ESP32 at $serverAddress", Toast.LENGTH_SHORT).show()
+                }
             }
-            connection.disconnect()
         }
     }
 }

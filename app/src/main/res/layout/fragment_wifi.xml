@@ -117,7 +117,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Test Connection"
-        app:icon="@drawable/ic_send_24"
+        app:icon="@drawable/ic_check_box_24"
         app:iconPadding="8dp"
         app:iconTint="?attr/colorOnPrimary"
         app:layout_constraintEnd_toEndOf="parent"
