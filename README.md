@@ -22,7 +22,7 @@ The K1-07 LTF II team consists of five members:
 1. Nafi Mulyo Kusumo 13321029
 2. Christoporus Nicholas 13321001 
 3. Zalma Zahara Hanum 13321061 
-4.Achriza Nurfarid 13321033 
+4. Achriza Nurfarid 13321033 
 5. Han Sen 13321033
 
 We hope you enjoy using the MeArm Controller and experimenting with all of its modes!
