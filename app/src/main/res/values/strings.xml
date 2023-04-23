@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">K1-07 MeArm Controller</string>
+    <string name="title_canvas">Canvas</string>
+    <string name="title_joystick">Joystick</string>
+    <string name="title_digital">Digital</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_wifi">Wi-Fi</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

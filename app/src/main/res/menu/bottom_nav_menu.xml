@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_canvas"
+        android:icon="@drawable/ic_brush_24"
+        android:title="@string/title_canvas" />
+
+    <item
+        android:id="@+id/navigation_joystick"
+        android:icon="@drawable/ic_joystick_24"
+        android:title="@string/title_joystick" />
+
+    <item
+        android:id="@+id/navigation_wifi"
+        android:enabled="false"
+        android:title=""
+        />
+
+    <item
+        android:id="@+id/navigation_digital"
+        android:icon="@drawable/ic_gamepad_24"
+        android:title="@string/title_digital" />
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_settings_24"
+        android:title="@string/title_settings" />
+
+</menu>

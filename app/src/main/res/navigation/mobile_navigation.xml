@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_wifi">
+
+    <fragment
+        android:id="@+id/navigation_wifi"
+        android:name="com.example.tugasbesar_ltfii_k1_07.ui.wifi.WifiFragment"
+        android:label="@string/title_wifi"
+        tools:layout="@layout/fragment_wifi" />
+
+    <fragment
+        android:id="@+id/navigation_canvas"
+        android:name="com.example.tugasbesar_ltfii_k1_07.ui.canvas.CanvasFragment"
+        android:label="@string/title_canvas"
+        tools:layout="@layout/fragment_canvas" />
+
+    <fragment
+        android:id="@+id/navigation_joystick"
+        android:name="com.example.tugasbesar_ltfii_k1_07.ui.joystick.JoystickFragment"
+        android:label="@string/title_joystick"
+        tools:layout="@layout/fragment_joystick" />
+
+    <fragment
+        android:id="@+id/navigation_digital"
+        android:name="com.example.tugasbesar_ltfii_k1_07.ui.digital.DigitalFragment"
+        android:label="@string/title_digital"
+        tools:layout="@layout/fragment_digital" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.example.tugasbesar_ltfii_k1_07.ui.settings.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings" />
+
+</navigation>
