@@ -26,9 +26,15 @@ class DigitalFragment : Fragment() {
     private val binding get() = _binding!!
 
     // Configuration variables
-    val dpadStepXY = esp32.settings.dpadStepXY
-    val dpadStepZ = esp32.settings.dpadStepZ
+
+    val dpadSpeedXY = esp32.settings.dpadSpeedXY
+    val dpadSpeedZ = esp32.settings.dpadSpeedZ
     val dpadInterval = esp32.settings.dpadUpdateInterval
+
+
+    val dpadStepXY = dpadSpeedXY * dpadInterval / 1000f
+    val dpadStepZ = dpadSpeedZ * dpadInterval / 1000f
+
 
     // Coroutine Job for managing loops
     private var dpadJob: Job? = null

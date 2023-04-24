@@ -19,14 +19,15 @@ data class Settings(
     var canvasStepZ: Int = 10,
 
     // Joystick Settings
-    var joystickUpdateInterval: Long = 500L,
+    var joystickUpdateInterval: Long = 200L, // Milliseconds
     var joystickThreshold: Float = 0.1f,
-    var joystickSensitivity: Float = 5f,
+    var joystickSpeedXY: Float = 1f, // Unit per second
+    var joystickSpeedZ: Float = 1f, // Unit per second
 
     // D-Pad Settings
-    var dpadUpdateInterval: Long = 500L,
-    var dpadStepXY: Float = 1f,
-    var dpadStepZ: Float = 1f,
+    var dpadUpdateInterval: Long = 600L, // Milliseconds
+    var dpadSpeedXY: Float = 2f, // Unit per second
+    var dpadSpeedZ: Float = 1f, // Unit per second
 )
 
 class ESP32(private val context: Context) {
@@ -93,11 +94,12 @@ class ESP32(private val context: Context) {
 
             putLong("joystickUpdateInterval", settings.joystickUpdateInterval)
             putFloat("joystickThreshold", settings.joystickThreshold)
-            putFloat("joystickSensitivity", settings.joystickSensitivity)
+            putFloat("joystickSensitivity", settings.joystickSpeedXY)
+            putFloat("joystickSpeedZ", settings.joystickSpeedZ)
 
             putLong("dpadUpdateInterval", settings.dpadUpdateInterval)
-            putFloat("dpadStepXY", settings.dpadStepXY)
-            putFloat("dpadStepZ", settings.dpadStepZ)
+            putFloat("dpadStepXY", settings.dpadSpeedXY)
+            putFloat("dpadStepZ", settings.dpadSpeedZ)
             apply()
         }
     }
@@ -113,11 +115,12 @@ class ESP32(private val context: Context) {
 
         settings.joystickUpdateInterval = sharedPreferences.getLong("joystickInterval", settings.joystickUpdateInterval)
         settings.joystickThreshold = sharedPreferences.getFloat("joystickThreshold", settings.joystickThreshold)
-        settings.joystickSensitivity = sharedPreferences.getFloat("joystickSensitivity", settings.joystickSensitivity)
+        settings.joystickSpeedXY = sharedPreferences.getFloat("joystickSensitivity", settings.joystickSpeedXY)
+        settings.joystickSpeedZ = sharedPreferences.getFloat("joystickSpeedZ", settings.joystickSpeedZ)
 
-        settings.dpadStepXY = sharedPreferences.getFloat("dpadStepXY", settings.dpadStepXY)
-        settings.dpadStepZ = sharedPreferences.getFloat("dpadStepZ", settings.dpadStepZ)
         settings.dpadUpdateInterval = sharedPreferences.getLong("dpadInterval", settings.dpadUpdateInterval)
+        settings.dpadSpeedXY = sharedPreferences.getFloat("dpadStepXY", settings.dpadSpeedXY)
+        settings.dpadSpeedZ = sharedPreferences.getFloat("dpadStepZ", settings.dpadSpeedZ)
     }
 
     init {
