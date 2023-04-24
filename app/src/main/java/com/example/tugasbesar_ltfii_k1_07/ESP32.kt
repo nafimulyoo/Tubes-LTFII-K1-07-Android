@@ -26,11 +26,25 @@ data class Settings(
     var dpadSpeedZ: Float = 1f, // Unit per second
 )
 
-class ESP32(private val context: Context) {
-
-    val settings = Settings()
+class ESP32 private constructor(private val context: Context) {
 
     private var serverAddress = "192.168.4.1"
+    private val sharedPreferences = context.getSharedPreferences("ESP32Settings", Context.MODE_PRIVATE)
+    val settings = Settings()
+
+    init {
+        loadSettings()
+    }
+
+    companion object {
+        @Volatile private var instance: ESP32? = null
+
+        fun getInstance(context: Context): ESP32 =
+            instance ?: synchronized(this) {
+                instance ?: ESP32(context).also { instance = it }
+            }
+    }
+
 
     fun setServerAddress(address: String) {
         // Validate address using a regex pattern
@@ -54,6 +68,7 @@ class ESP32(private val context: Context) {
     }
 
     fun sendMessage(message: String) {
+        println("Sending message to ESP32: $message")
         val espUrl = URL("http://$serverAddress/?message=$message")
         GlobalScope.launch(Dispatchers.IO) {
             try {
@@ -79,7 +94,6 @@ class ESP32(private val context: Context) {
     }
 
     fun saveSettings() {
-        val sharedPreferences = context.getSharedPreferences("ESP32Settings", Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
             putFloat("canvasScalingFactor", settings.canvasScalingFactor)
             putLong("canvasTimeout", settings.canvasTimeout)
@@ -97,7 +111,6 @@ class ESP32(private val context: Context) {
     }
 
     fun loadSettings() {
-        val sharedPreferences = context.getSharedPreferences("ESP32Settings", Context.MODE_PRIVATE)
         settings.canvasScalingFactor = sharedPreferences.getFloat("canvasScalingFactor", settings.canvasScalingFactor)
         settings.canvasTimeout = sharedPreferences.getLong("canvasTimeout", settings.canvasTimeout)
 

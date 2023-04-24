@@ -38,7 +38,6 @@ class CanvasView : View {
                 .debounce(timeoutMillis = esp32.settings.canvasTimeout) // Atur waktu tunda dalam milidetik sesuai kebutuhan
                 .collect { (paperX, paperY) ->
                     esp32.sendMessage("CANVAS MOVE_XY $paperX $paperY 0")
-                    println("CANVAS MOVE_XY $paperX $paperY 0")
                 }
         }
     }
@@ -54,8 +53,6 @@ class CanvasView : View {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         setupDrawing()
     }
-
-
 
     private fun setupDrawing() {
         paintBrush.isAntiAlias = true
@@ -89,11 +86,9 @@ class CanvasView : View {
                 path.moveTo(x, y)
                 if (isDrawing) {
                     esp32.sendMessage("CANVAS PEN_DOWN $paperX $paperY 0")
-                    println("CANVAS PEN_DOWN $paperX $paperY 0")
                 }
                 else {
                     esp32.sendMessage("CANVAS MOVE_XY $paperX $paperY 0")
-                    println("CANVAS MOVE_XY $paperX $paperY 0")
                 }
                 return true
             }
@@ -111,11 +106,9 @@ class CanvasView : View {
                 colorList.add(currentBrush)
                 if (isDrawing) {
                     esp32.sendMessage("CANVAS PEN_UP $paperX $paperY 0")
-                    println("CANVAS PEN_UP $paperX $paperY 0")
                 }
                 else {
                     esp32.sendMessage("CANVAS MOVE_XY $paperX $paperY 0")
-                    println("CANVAS MOVE_XY $paperX $paperY 0")
                 }
             }
 

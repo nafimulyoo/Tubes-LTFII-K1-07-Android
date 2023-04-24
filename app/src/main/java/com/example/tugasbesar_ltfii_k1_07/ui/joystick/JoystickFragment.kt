@@ -17,16 +17,17 @@ class JoystickFragment : Fragment() {
     private var _binding: FragmentJoystickBinding? = null
     private val binding get() = _binding!!
 
+    // Configuration variables
     private val joystickUpdateInterval = esp32.settings.joystickUpdateInterval // Interval for joystick movement to be sent (ms)
     private val joystickThreshold = esp32.settings.joystickThreshold // Threshold for joystick movement
     private val joystickSpeedXY = esp32.settings.joystickSpeedXY // Speed for joystick movement in XY plane (Unit/s)
     private val joystickSpeedZ = esp32.settings.joystickSpeedZ // Speed for joystick movement in Z plane (Unit/s)
 
+    // Calculated variables
     private val joystickSensitivityXY = joystickSpeedXY * joystickUpdateInterval / 1000f
     private val joystickSensitivityZ = joystickSpeedZ * joystickUpdateInterval / 1000f
 
-    private val handler = Handler(Looper.getMainLooper())
-    private var joystickRunnable: Runnable? = null
+    // Variables for storing joystick movement
     private var dx = 0f
     private var dy = 0f
     private var dz = 0f
@@ -34,6 +35,12 @@ class JoystickFragment : Fragment() {
     private var dx_string = ""
     private var dy_string = ""
     private var dz_string = ""
+
+    // Coroutine Job for managing loops
+    private val handler = Handler(Looper.getMainLooper())
+    private var joystickRunnable: Runnable? = null
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,7 +90,6 @@ class JoystickFragment : Fragment() {
                         dy_string = String.format("%.4f", dy)
                         dz_string = String.format("%.4f", dz)
                         esp32.sendMessage("JOYSTICK $dx_string $dy_string $dz_string")
-                        println("JOYSTICK $dx_string $dy_string $dz_string")
                         handler.postDelayed(this, joystickUpdateInterval)
                     } else {
                         joystickRunnable = null

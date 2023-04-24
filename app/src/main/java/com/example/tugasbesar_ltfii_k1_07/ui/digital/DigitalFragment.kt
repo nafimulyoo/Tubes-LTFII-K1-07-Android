@@ -20,18 +20,14 @@ import com.example.tugasbesar_ltfii_k1_07.MainActivity.Companion.esp32
 class DigitalFragment : Fragment() {
 
     private var _binding: FragmentDigitalBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     // Configuration variables
-
     val dpadSpeedXY = esp32.settings.dpadSpeedXY
     val dpadSpeedZ = esp32.settings.dpadSpeedZ
     val dpadInterval = esp32.settings.dpadUpdateInterval
 
-
+    // Calculated variables
     val dpadStepXY = dpadSpeedXY * dpadInterval / 1000f
     val dpadStepZ = dpadSpeedZ * dpadInterval / 1000f
 
@@ -79,7 +75,6 @@ class DigitalFragment : Fragment() {
                         while (true) {
                             // Replace sendMessage with your actual sendMessage function
                             esp32.sendMessage("JOYSTICK $dx $dy $dz")
-                            println("JOYSTICK $dx $dy $dz")
                             delay(dpadInterval)
                         }
                     }
