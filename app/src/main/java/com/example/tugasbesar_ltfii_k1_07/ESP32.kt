@@ -12,6 +12,7 @@ import java.net.URL
 data class Settings(
     // Canvas settings
     var canvasScalingFactor: Float = 1f,
+    var canvasTimeout: Long = 25L, // Milliseconds
 
     // Joystick Settings
     var joystickUpdateInterval: Long = 200L, // Milliseconds
@@ -81,6 +82,7 @@ class ESP32(private val context: Context) {
         val sharedPreferences = context.getSharedPreferences("ESP32Settings", Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
             putFloat("canvasScalingFactor", settings.canvasScalingFactor)
+            putLong("canvasTimeout", settings.canvasTimeout)
 
             putLong("joystickUpdateInterval", settings.joystickUpdateInterval)
             putFloat("joystickThreshold", settings.joystickThreshold)
@@ -97,6 +99,7 @@ class ESP32(private val context: Context) {
     fun loadSettings() {
         val sharedPreferences = context.getSharedPreferences("ESP32Settings", Context.MODE_PRIVATE)
         settings.canvasScalingFactor = sharedPreferences.getFloat("canvasScalingFactor", settings.canvasScalingFactor)
+        settings.canvasTimeout = sharedPreferences.getLong("canvasTimeout", settings.canvasTimeout)
 
         settings.joystickUpdateInterval = sharedPreferences.getLong("joystickInterval", settings.joystickUpdateInterval)
         settings.joystickThreshold = sharedPreferences.getFloat("joystickThreshold", settings.joystickThreshold)

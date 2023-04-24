@@ -12,44 +12,60 @@ import android.view.ViewGroup
 import com.example.tugasbesar_ltfii_k1_07.ui.canvas.CanvasFragment.Companion.paintBrush
 import com.example.tugasbesar_ltfii_k1_07.ui.canvas.CanvasFragment.Companion.path
 import com.example.tugasbesar_ltfii_k1_07.MainActivity.Companion.esp32
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 
 
 class CanvasView : View {
 
-        var params : ViewGroup.LayoutParams? = null
+    var params : ViewGroup.LayoutParams? = null
 
-        companion object {
-            var pathList = ArrayList<Path>()
-            var colorList = ArrayList<Int>()
-            var currentBrush = Color.BLACK;
-            var isDrawing = true
-            var canvasWidth: Int = 0
-            var canvasHeight: Int = 0
+    companion object {
+        var pathList = ArrayList<Path>()
+        var colorList = ArrayList<Int>()
+        var currentBrush = Color.BLACK;
+        var isDrawing = true
+        var canvasWidth: Int = 0
+        var canvasHeight: Int = 0
+    }
+
+    private val moveThrottleFlow = MutableSharedFlow<Pair<Float, Float>>(extraBufferCapacity = 1)
+    private var throttleJob: Job? = null
+
+    init {
+        throttleJob = CoroutineScope(Dispatchers.Main).launch {
+            moveThrottleFlow
+                .debounce(timeoutMillis = esp32.settings.canvasTimeout) // Atur waktu tunda dalam milidetik sesuai kebutuhan
+                .collect { (paperX, paperY) ->
+                    esp32.sendMessage("CANVAS MOVE_XY $paperX $paperY 0")
+                    println("CANVAS MOVE_XY $paperX $paperY 0")
+                }
         }
+    }
 
-        constructor(context: Context) : this(context, null) {
-            setupDrawing()
-        }
+    constructor(context: Context) : this(context, null) {
+        setupDrawing()
+    }
 
-        constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0) {
-            setupDrawing()
-        }
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0) {
+        setupDrawing()
+    }
 
-        constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-            setupDrawing()
-        }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        setupDrawing()
+    }
 
 
 
-        private fun setupDrawing() {
-            paintBrush.isAntiAlias = true
-            paintBrush.color = currentBrush
-            paintBrush.style = Paint.Style.STROKE
-            paintBrush.strokeJoin = Paint.Join.ROUND
-            paintBrush.strokeWidth = 8f;
+    private fun setupDrawing() {
+        paintBrush.isAntiAlias = true
+        paintBrush.color = currentBrush
+        paintBrush.style = Paint.Style.STROKE
+        paintBrush.strokeJoin = Paint.Join.ROUND
+        paintBrush.strokeWidth = 8f;
 
-            params = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        }
+        params = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -86,16 +102,21 @@ class CanvasView : View {
                 path.lineTo(x, y)
                 pathList.add(path)
                 colorList.add(currentBrush)
-                esp32.sendMessage("CANVAS MOVE_XY $paperX $paperY 0")
-                println("CANVAS MOVE_XY $paperX $paperY 0")
+                moveThrottleFlow.tryEmit(Pair(paperX, paperY))
             }
 
             MotionEvent.ACTION_UP -> {
                 path.lineTo(x, y)
                 pathList.add(path)
                 colorList.add(currentBrush)
-                esp32.sendMessage("CANVAS PEN_UP $paperX $paperY 0")
-                println("CANVAS PEN_UP $paperX $paperY 0")
+                if (isDrawing) {
+                    esp32.sendMessage("CANVAS PEN_UP $paperX $paperY 0")
+                    println("CANVAS PEN_UP $paperX $paperY 0")
+                }
+                else {
+                    esp32.sendMessage("CANVAS MOVE_XY $paperX $paperY 0")
+                    println("CANVAS MOVE_XY $paperX $paperY 0")
+                }
             }
 
             else -> return false
@@ -118,4 +139,10 @@ class CanvasView : View {
         val paperY = x * esp32.settings.canvasScalingFactor
         return Pair(paperX, paperY)
     }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        throttleJob?.cancel()
+    }
+
 }
