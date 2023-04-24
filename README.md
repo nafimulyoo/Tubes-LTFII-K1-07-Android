@@ -1,5 +1,5 @@
 # MeArm Controller by K1-07 LTF II
-Welcome to the MeArm Controller, a project developed by the K1-07 LTF II team for their final project in the Physics Engineering Lab II at the Bandung Intitute of Technology. This innovative device has three modes designed to make controlling the MeArm with ease.
+Welcome to the MeArm Controller, a project developed by the K1-07 LTF II team for their final project in the Physics Engineering Lab II at the Bandung Institute of Technology. The MeArm Controller is a versatile mobile Android app designed to provide users with different ways to control K1-07 MeArm robotic arm. By utilizing Wi-Fi communication between an Android device and an ESP32 microcontroller, the app offers three distinct modes of operation.
 
 ## Three Modes of Operation
 The MeArm Controller has three modes of operation to choose from:

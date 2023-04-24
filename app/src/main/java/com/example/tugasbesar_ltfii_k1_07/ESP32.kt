@@ -9,54 +9,31 @@ import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
 
+data class Settings(
+    // Canvas settings
+    var canvasPaperWidth: Int = 200,
+    var canvasPaperHeight: Int = 200,
+    var canvasPosThreshold: Int = 10,
+    var canvasTickSpeed: Int = 10,
+    var canvasSpeedZ: Int = 10,
+    var canvasStepZ: Int = 10,
+
+    // Joystick Settings
+    var joystickUpdateInterval: Long = 500L,
+    var joystickThreshold: Float = 0.1f,
+    var joystickSensitivity: Float = 5f,
+
+    // D-Pad Settings
+    var dpadUpdateInterval: Long = 500L,
+    var dpadStepXY: Float = 1f,
+    var dpadStepZ: Float = 1f,
+)
+
 class ESP32(private val context: Context) {
 
+    val settings = Settings()
+
     private var serverAddress = "192.168.4.1"
-    inner class ControlSettings() {
-        var canvasPaperWidth = 200
-        var canvasPaperHeight = 200
-        var canvasPosThreshold = 10
-        var canvasTickSpeed = 10
-        var canvasSpeedZ = 10
-        var canvasStepZ = 10
-
-        var joystickStrengthThreshold = 10
-        var joystickSpeedXY = 10
-        var joystickSpeedZ = 10
-        var joystickStepXY = 10
-        var joystickStepZ = 10
-
-        var digitalSpeedXY = 10
-        var digitalSpeedZ = 10
-        var digitalStepXY = 10
-        var digitalStepZ = 10
-
-        fun set(settings: String) {
-            val settingsList = settings.split(",")
-            canvasPaperWidth = settingsList[0].toInt()
-            canvasPaperHeight = settingsList[1].toInt()
-            canvasPosThreshold = settingsList[2].toInt()
-            canvasTickSpeed = settingsList[3].toInt()
-            canvasSpeedZ = settingsList[4].toInt()
-            canvasStepZ = settingsList[5].toInt()
-
-            joystickStrengthThreshold = settingsList[6].toInt()
-            joystickSpeedXY = settingsList[7].toInt()
-            joystickSpeedZ = settingsList[8].toInt()
-            joystickStepXY = settingsList[9].toInt()
-            joystickStepZ = settingsList[10].toInt()
-
-            digitalSpeedXY = settingsList[11].toInt()
-            digitalSpeedZ = settingsList[12].toInt()
-            digitalStepXY = settingsList[13].toInt()
-            digitalStepZ = settingsList[14].toInt()
-        }
-
-        fun send() {
-            val settings = " $canvasPaperWidth,$canvasPaperHeight,$canvasPosThreshold,$canvasTickSpeed,$canvasSpeedZ,$canvasStepZ,$joystickStrengthThreshold,$joystickSpeedXY,$joystickSpeedZ,$joystickStepXY,$joystickStepZ,$digitalSpeedXY,$digitalSpeedZ,$digitalStepXY,$digitalStepZ"
-            sendMessage(settings)
-        }
-    }
 
     fun setServerAddress(address: String) {
         // Validate address using a regex pattern
@@ -102,5 +79,48 @@ class ESP32(private val context: Context) {
                 }
             }
         }
+    }
+
+    fun saveSettings() {
+        val sharedPreferences = context.getSharedPreferences("ESP32Settings", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putInt("canvasPaperWidth", settings.canvasPaperWidth)
+            putInt("canvasPaperHeight", settings.canvasPaperHeight)
+            putInt("canvasPosThreshold", settings.canvasPosThreshold)
+            putInt("canvasTickSpeed", settings.canvasTickSpeed)
+            putInt("canvasSpeedZ", settings.canvasSpeedZ)
+            putInt("canvasStepZ", settings.canvasStepZ)
+
+            putLong("joystickUpdateInterval", settings.joystickUpdateInterval)
+            putFloat("joystickThreshold", settings.joystickThreshold)
+            putFloat("joystickSensitivity", settings.joystickSensitivity)
+
+            putLong("dpadUpdateInterval", settings.dpadUpdateInterval)
+            putFloat("dpadStepXY", settings.dpadStepXY)
+            putFloat("dpadStepZ", settings.dpadStepZ)
+            apply()
+        }
+    }
+
+    fun loadSettings() {
+        val sharedPreferences = context.getSharedPreferences("ESP32Settings", Context.MODE_PRIVATE)
+        settings.canvasPaperWidth = sharedPreferences.getInt("canvasPaperWidth", settings.canvasPaperWidth)
+        settings.canvasPaperHeight = sharedPreferences.getInt("canvasPaperHeight", settings.canvasPaperHeight)
+        settings.canvasPosThreshold = sharedPreferences.getInt("canvasPosThreshold", settings.canvasPosThreshold)
+        settings.canvasTickSpeed = sharedPreferences.getInt("canvasTickSpeed", settings.canvasTickSpeed)
+        settings.canvasSpeedZ = sharedPreferences.getInt("canvasSpeedZ", settings.canvasSpeedZ)
+        settings.canvasStepZ = sharedPreferences.getInt("canvasStepZ", settings.canvasStepZ)
+
+        settings.joystickUpdateInterval = sharedPreferences.getLong("joystickInterval", settings.joystickUpdateInterval)
+        settings.joystickThreshold = sharedPreferences.getFloat("joystickThreshold", settings.joystickThreshold)
+        settings.joystickSensitivity = sharedPreferences.getFloat("joystickSensitivity", settings.joystickSensitivity)
+
+        settings.dpadStepXY = sharedPreferences.getFloat("dpadStepXY", settings.dpadStepXY)
+        settings.dpadStepZ = sharedPreferences.getFloat("dpadStepZ", settings.dpadStepZ)
+        settings.dpadUpdateInterval = sharedPreferences.getLong("dpadInterval", settings.dpadUpdateInterval)
+    }
+
+    init {
+        loadSettings()
     }
 }

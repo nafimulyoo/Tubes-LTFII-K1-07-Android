@@ -73,14 +73,14 @@ class CanvasFragment : Fragment() {
             pointButton.backgroundTintList = resources.getColorStateList(R.color.moss_700)
         }
 
+//        TODO: Logic
         binding.downButton.setOnClickListener {
-            esp32.sendMessage("CANVAS MOVE_Z 0 0 -${esp32.ControlSettings().digitalStepZ}")
-            true
+//            esp32.sendMessage("CANVAS MOVE_Z 0 0 -${esp32.settings.canvasPaperHeight}")
         }
 
         binding.upButton.setOnClickListener {
-            esp32.sendMessage("CANVAS MOVE_Z 0 0 ${esp32.ControlSettings().digitalStepZ}")
-            true
+//            esp32.sendMessage("CANVAS MOVE_Z 0 0 ${esp32.settings.canvasPaperHeight}")
+
         }
 
         return view
