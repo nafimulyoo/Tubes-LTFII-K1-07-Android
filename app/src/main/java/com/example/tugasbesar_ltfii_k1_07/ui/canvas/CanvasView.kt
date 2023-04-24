@@ -23,6 +23,8 @@ class CanvasView : View {
             var colorList = ArrayList<Int>()
             var currentBrush = Color.BLACK;
             var isDrawing = true
+            var canvasWidth: Int = 0
+            var canvasHeight: Int = 0
         }
 
         constructor(context: Context) : this(context, null) {
@@ -49,18 +51,33 @@ class CanvasView : View {
             params = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        canvasWidth = w
+        canvasHeight = h
+
+        params = ViewGroup.LayoutParams(canvasWidth, canvasHeight)
+        layoutParams = params
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        var x = event.x
-        var y = event.y
+        var x = event.x.coerceIn(0f, canvasWidth.toFloat())
+        var y = event.y.coerceIn(0f, canvasHeight.toFloat())
+
+        val paperCoordinates = screenToPaperCoordinates(x, y)
+        val paperX = paperCoordinates.first
+        val paperY = paperCoordinates.second
 
         when(event.action) {
             MotionEvent.ACTION_DOWN -> {
                 path.moveTo(x, y)
                 if (isDrawing) {
-                    esp32.sendMessage("CANVAS PEN_DOWN $x $y 0")
+                    esp32.sendMessage("CANVAS PEN_DOWN $paperX $paperY 0")
+                    println("CANVAS PEN_DOWN $paperX $paperY 0")
                 }
                 else {
-                    esp32.sendMessage("CANVAS MOVE_XY $x $y 0")
+                    esp32.sendMessage("CANVAS MOVE_XY $paperX $paperY 0")
+                    println("CANVAS MOVE_XY $paperX $paperY 0")
                 }
                 return true
             }
@@ -69,14 +86,16 @@ class CanvasView : View {
                 path.lineTo(x, y)
                 pathList.add(path)
                 colorList.add(currentBrush)
-                esp32.sendMessage("CANVAS MOVE_XY $x $y 0")
+                esp32.sendMessage("CANVAS MOVE_XY $paperX $paperY 0")
+                println("CANVAS MOVE_XY $paperX $paperY 0")
             }
 
             MotionEvent.ACTION_UP -> {
                 path.lineTo(x, y)
                 pathList.add(path)
                 colorList.add(currentBrush)
-                esp32.sendMessage("CANVAS PEN_UP $x $y 0")
+                esp32.sendMessage("CANVAS PEN_UP $paperX $paperY 0")
+                println("CANVAS PEN_UP $paperX $paperY 0")
             }
 
             else -> return false
@@ -94,4 +113,9 @@ class CanvasView : View {
         }
     }
 
+    private fun screenToPaperCoordinates(x: Float, y: Float): Pair<Float, Float> {
+        val paperX = y * esp32.settings.canvasScalingFactor
+        val paperY = x * esp32.settings.canvasScalingFactor
+        return Pair(paperX, paperY)
+    }
 }

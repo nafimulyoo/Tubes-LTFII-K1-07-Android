@@ -11,12 +11,7 @@ import java.net.URL
 
 data class Settings(
     // Canvas settings
-    var canvasPaperWidth: Int = 200,
-    var canvasPaperHeight: Int = 200,
-    var canvasPosThreshold: Int = 10,
-    var canvasTickSpeed: Int = 10,
-    var canvasSpeedZ: Int = 10,
-    var canvasStepZ: Int = 10,
+    var canvasScalingFactor: Float = 1f,
 
     // Joystick Settings
     var joystickUpdateInterval: Long = 200L, // Milliseconds
@@ -85,12 +80,7 @@ class ESP32(private val context: Context) {
     fun saveSettings() {
         val sharedPreferences = context.getSharedPreferences("ESP32Settings", Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
-            putInt("canvasPaperWidth", settings.canvasPaperWidth)
-            putInt("canvasPaperHeight", settings.canvasPaperHeight)
-            putInt("canvasPosThreshold", settings.canvasPosThreshold)
-            putInt("canvasTickSpeed", settings.canvasTickSpeed)
-            putInt("canvasSpeedZ", settings.canvasSpeedZ)
-            putInt("canvasStepZ", settings.canvasStepZ)
+            putFloat("canvasScalingFactor", settings.canvasScalingFactor)
 
             putLong("joystickUpdateInterval", settings.joystickUpdateInterval)
             putFloat("joystickThreshold", settings.joystickThreshold)
@@ -106,12 +96,7 @@ class ESP32(private val context: Context) {
 
     fun loadSettings() {
         val sharedPreferences = context.getSharedPreferences("ESP32Settings", Context.MODE_PRIVATE)
-        settings.canvasPaperWidth = sharedPreferences.getInt("canvasPaperWidth", settings.canvasPaperWidth)
-        settings.canvasPaperHeight = sharedPreferences.getInt("canvasPaperHeight", settings.canvasPaperHeight)
-        settings.canvasPosThreshold = sharedPreferences.getInt("canvasPosThreshold", settings.canvasPosThreshold)
-        settings.canvasTickSpeed = sharedPreferences.getInt("canvasTickSpeed", settings.canvasTickSpeed)
-        settings.canvasSpeedZ = sharedPreferences.getInt("canvasSpeedZ", settings.canvasSpeedZ)
-        settings.canvasStepZ = sharedPreferences.getInt("canvasStepZ", settings.canvasStepZ)
+        settings.canvasScalingFactor = sharedPreferences.getFloat("canvasScalingFactor", settings.canvasScalingFactor)
 
         settings.joystickUpdateInterval = sharedPreferences.getLong("joystickInterval", settings.joystickUpdateInterval)
         settings.joystickThreshold = sharedPreferences.getFloat("joystickThreshold", settings.joystickThreshold)

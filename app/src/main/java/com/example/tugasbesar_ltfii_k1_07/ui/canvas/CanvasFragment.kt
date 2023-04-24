@@ -9,12 +9,15 @@ import com.example.tugasbesar_ltfii_k1_07.databinding.FragmentCanvasBinding
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.view.MotionEvent
 import com.example.tugasbesar_ltfii_k1_07.ui.canvas.CanvasView.Companion.colorList
 import com.example.tugasbesar_ltfii_k1_07.ui.canvas.CanvasView.Companion.currentBrush
 import com.example.tugasbesar_ltfii_k1_07.ui.canvas.CanvasView.Companion.pathList
 import com.example.tugasbesar_ltfii_k1_07.ui.canvas.CanvasView.Companion.isDrawing
 import com.example.tugasbesar_ltfii_k1_07.MainActivity.Companion.esp32
 import com.example.tugasbesar_ltfii_k1_07.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.*
 
 class CanvasFragment : Fragment() {
     private var _binding: FragmentCanvasBinding? = null
@@ -32,11 +35,18 @@ class CanvasFragment : Fragment() {
         _binding = FragmentCanvasBinding.inflate(inflater, container, false)
         val view = binding.root
 
-//        TODO: Cek koordinat
 
         val paintButton = binding.paintButton
         val pointButton = binding.pointButton
         val clearButton = binding.clearButton
+
+
+//        Up and Down Button
+        var upDownJob: Job? = null
+        val dpadSpeedZ = esp32.settings.dpadSpeedZ
+        val dpadInterval = esp32.settings.dpadUpdateInterval
+        val dpadStepZ = dpadSpeedZ * dpadInterval / 1000f
+
         val upButton = binding.upButton
         val downButton = binding.downButton
 
@@ -73,18 +83,36 @@ class CanvasFragment : Fragment() {
             pointButton.backgroundTintList = resources.getColorStateList(R.color.moss_700)
         }
 
-//        TODO: Logic
-        binding.downButton.setOnClickListener {
-//            esp32.sendMessage("CANVAS MOVE_Z 0 0 -${esp32.settings.canvasPaperHeight}")
+
+
+        fun setTouchListener(button: FloatingActionButton, dz: Float) {
+            button.setOnTouchListener { _, event ->
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        upDownJob?.cancel()
+                        upDownJob = CoroutineScope(Dispatchers.Main).launch {
+                            while (true) {
+                                // Replace sendMessage with your actual sendMessage function
+                                esp32.sendMessage("CANVAS MOVE_Z 0 0 $dz")
+                                println("CANVAS MOVE_Z 0 0 $dz")
+                                delay(dpadInterval)
+                            }
+                        }
+                    }
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        upDownJob?.cancel()
+                    }
+                }
+                true
+            }
         }
 
-        binding.upButton.setOnClickListener {
-//            esp32.sendMessage("CANVAS MOVE_Z 0 0 ${esp32.settings.canvasPaperHeight}")
-
-        }
+        setTouchListener(binding.upButton, dpadStepZ)
+        setTouchListener(binding.downButton, -dpadStepZ)
 
         return view
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
