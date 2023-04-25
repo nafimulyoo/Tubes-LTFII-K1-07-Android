@@ -94,7 +94,8 @@ class CanvasFragment : Fragment() {
         button.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    val upDownJob = CoroutineScope(Dispatchers.Main).launch {
+                    upDownJob?.cancel()
+                    upDownJob = CoroutineScope(Dispatchers.Main).launch {
                         while (true) {
                             esp32.sendMessage("CANVAS MOVE_Z 0 0 $dz")
                             delay(esp32.settings.dpadUpdateInterval)

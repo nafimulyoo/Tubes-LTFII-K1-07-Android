@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@color/white"
+        android:background="?attr/colorOnPrimary"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="8dp"
@@ -60,21 +60,20 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_arrow_24"
                 app:layout_anchor="@id/up_button"
-
                 android:layout_marginLeft="36dp"
                 app:layout_anchorGravity="center_horizontal|bottom"
                 android:rotation="180"
                 />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/up_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_24"
-            android:layout_marginLeft="12dp"
-            app:layout_anchor="@id/up_button"
-            app:layout_anchorGravity="center_horizontal|bottom"
-            />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/up_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_24"
+                android:layout_marginLeft="12dp"
+                app:layout_anchor="@id/up_button"
+                app:layout_anchorGravity="center_horizontal|bottom"
+                />
 
     </LinearLayout>
 
