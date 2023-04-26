@@ -29,8 +29,6 @@ class WifiFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val wifiViewModel =
-            ViewModelProvider(this).get(WifiViewModel::class.java)
 
         _binding = FragmentWifiBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -51,8 +49,7 @@ class WifiFragment : Fragment() {
         // Test Connection button
         val testConnectionButton: Button = binding.testConnectionButton
         testConnectionButton.setOnClickListener {
-            // Run the getESPAllSettings() method
-            esp32.sendMessage("TEST")
+            esp32.testConnection()
         }
 
         return root

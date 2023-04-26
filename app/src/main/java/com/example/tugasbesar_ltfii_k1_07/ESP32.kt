@@ -7,12 +7,17 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.net.ConnectException
 import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 import java.net.URL
 
 data class Settings(
+    // Server settings
+    var serverAddress: String = "192.168.4.1",
+
     // Canvas settings
     var canvasScalingFactor: Float = 1f,
     var canvasTimeout: Long = 25L, // Milliseconds
+    var canvasTogglePenStep: Float = 1f,
 
     // Joystick Settings
     var joystickUpdateInterval: Long = 200L, // Milliseconds
@@ -28,7 +33,6 @@ data class Settings(
 
 class ESP32 private constructor(private val context: Context) {
 
-    private var serverAddress = "192.168.4.1"
     private val sharedPreferences = context.getSharedPreferences("ESP32Settings", Context.MODE_PRIVATE)
     val settings = Settings()
 
@@ -54,7 +58,7 @@ class ESP32 private constructor(private val context: Context) {
             Toast.makeText(context, "Please enter a valid IP address", Toast.LENGTH_SHORT).show()
             return
         }
-        if (address == serverAddress) {
+        if (address == settings.serverAddress) {
             Toast.makeText(context, "IP address is already set", Toast.LENGTH_SHORT).show()
             return
         }
@@ -63,40 +67,88 @@ class ESP32 private constructor(private val context: Context) {
             return
         }
 
-        serverAddress = address
-        Toast.makeText(context, "IP address set to $serverAddress", Toast.LENGTH_SHORT).show()
+        settings.serverAddress = address
+        Toast.makeText(context, "IP address set to ${settings.serverAddress}", Toast.LENGTH_SHORT).show()
     }
 
     fun sendMessage(message: String) {
         println("Sending message to ESP32: $message")
-        val espUrl = URL("http://$serverAddress/?message=$message")
+
+        val espUrl = URL("http://${settings.serverAddress}/?message=$message")
         GlobalScope.launch(Dispatchers.IO) {
             try {
                 val connection = espUrl.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
+                connection.connectTimeout = 5000
                 val responseCode = connection.responseCode
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     // Request successful
                     val response = connection.inputStream.bufferedReader().readText()
-                    println("Response from ESP32: $response")
                 } else {
                     // Request failed
                     println("Request failed with error code $responseCode")
                 }
                 connection.disconnect()
             } catch (e: ConnectException) {
-                // Show Toast message indicating that the connection has failed
+                println("Connection to ESP32 failed")
+                    GlobalScope.launch(Dispatchers.Main) {
+                    Toast.makeText(context, "Connection to ESP32 failed", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: SocketTimeoutException) {
+                println("Connection to ESP32 timed out")
                 GlobalScope.launch(Dispatchers.Main) {
-                    Toast.makeText(context, "Failed to connect to ESP32 at $serverAddress", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Connection to ESP32 timed out", Toast.LENGTH_SHORT).show()
+                    }
+            }
+        }
+    }
+
+    fun testConnection() {
+        println("Sending message to ESP32: TEST")
+        val espUrl = URL("http://${settings.serverAddress}/?message=TEST")
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val connection = espUrl.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connectTimeout = 5000
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    // Request successful
+                    val response = connection.inputStream.bufferedReader().readText()
+
+                    val toastMessage = response.substring(response.indexOf("<h1>") + 4, response.indexOf("</h1>"))
+                    GlobalScope.launch(Dispatchers.Main) {
+                        Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
+                    }
+                    println(toastMessage)
+                } else {
+                    // Request failed
+                    println("Request failed with error code $responseCode")
+                }
+                connection.disconnect()
+            } catch (e: ConnectException) {
+                println("Connection to ESP32 failed")
+                GlobalScope.launch(Dispatchers.Main) {
+                    Toast.makeText(context, "Connection to ESP32 failed", Toast.LENGTH_SHORT).show()
                 }
             }
+            catch (e: SocketTimeoutException) {
+                println("Connection to ESP32 timed out")
+                GlobalScope.launch(Dispatchers.Main) {
+                    Toast.makeText(context, "Connection to ESP32 timed out", Toast.LENGTH_SHORT).show()
+                }
+            }
+
         }
     }
 
     fun saveSettings() {
         with(sharedPreferences.edit()) {
+            putString("serverAddress", settings.serverAddress)
+
             putFloat("canvasScalingFactor", settings.canvasScalingFactor)
             putLong("canvasTimeout", settings.canvasTimeout)
+            putFloat("canvasTogglePenStep", settings.canvasTogglePenStep)
 
             putLong("joystickUpdateInterval", settings.joystickUpdateInterval)
             putFloat("joystickThreshold", settings.joystickThreshold)

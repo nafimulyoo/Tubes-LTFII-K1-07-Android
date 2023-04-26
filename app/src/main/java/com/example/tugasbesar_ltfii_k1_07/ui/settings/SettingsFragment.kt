@@ -27,6 +27,7 @@ class SettingsFragment : Fragment() {
         // Initialize EditTexts with the current settings values
         binding.etCanvasScalingFactor.setText(esp32.settings.canvasScalingFactor.toString())
         binding.etCanvasTimeout.setText(esp32.settings.canvasTimeout.toString())
+        binding.etCanvasTogglePenStep.setText(esp32.settings.canvasTogglePenStep.toString())
         binding.etJoystickUpdateInterval.setText(esp32.settings.joystickUpdateInterval.toString())
         binding.etJoystickThreshold.setText(esp32.settings.joystickThreshold.toString())
         binding.etJoystickSpeedXY.setText(esp32.settings.joystickSpeedXY.toString())
@@ -39,6 +40,7 @@ class SettingsFragment : Fragment() {
             // Save updated settings values
             esp32.settings.canvasScalingFactor = binding.etCanvasScalingFactor.text.toString().toFloatOrNull() ?: esp32.settings.canvasScalingFactor
             esp32.settings.canvasTimeout = binding.etCanvasTimeout.text.toString().toLongOrNull() ?: esp32.settings.canvasTimeout
+            esp32.settings.canvasTogglePenStep = binding.etCanvasTogglePenStep.text.toString().toFloatOrNull() ?: esp32.settings.canvasTogglePenStep
             esp32.settings.joystickUpdateInterval = binding.etJoystickUpdateInterval.text.toString().toLongOrNull() ?: esp32.settings.joystickUpdateInterval
             esp32.settings.joystickThreshold = binding.etJoystickThreshold.text.toString().toFloatOrNull() ?: esp32.settings.joystickThreshold
             esp32.settings.joystickSpeedXY = binding.etJoystickSpeedXY.text.toString().toFloatOrNull() ?: esp32.settings.joystickSpeedXY

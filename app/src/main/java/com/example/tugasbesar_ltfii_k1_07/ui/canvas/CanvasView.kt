@@ -35,7 +35,7 @@ class CanvasView : View {
     init {
         throttleJob = CoroutineScope(Dispatchers.Main).launch {
             moveThrottleFlow
-                .debounce(timeoutMillis = esp32.settings.canvasTimeout) // Atur waktu tunda dalam milidetik sesuai kebutuhan
+                .debounce(timeoutMillis = esp32.settings.canvasTimeout)
                 .collect { (paperX, paperY) ->
                     esp32.sendMessage("CANVAS MOVE_XY $paperX $paperY 0")
                 }
@@ -85,7 +85,7 @@ class CanvasView : View {
             MotionEvent.ACTION_DOWN -> {
                 path.moveTo(x, y)
                 if (isDrawing) {
-                    esp32.sendMessage("CANVAS PEN_DOWN $paperX $paperY 0")
+                    esp32.sendMessage("CANVAS PEN_DOWN $paperX $paperY ${-esp32.settings.canvasTogglePenStep}")
                 }
                 else {
                     esp32.sendMessage("CANVAS MOVE_XY $paperX $paperY 0")
@@ -105,7 +105,7 @@ class CanvasView : View {
                 pathList.add(path)
                 colorList.add(currentBrush)
                 if (isDrawing) {
-                    esp32.sendMessage("CANVAS PEN_UP $paperX $paperY 0")
+                    esp32.sendMessage("CANVAS PEN_UP $paperX $paperY ${esp32.settings.canvasTogglePenStep}")
                 }
                 else {
                     esp32.sendMessage("CANVAS MOVE_XY $paperX $paperY 0")

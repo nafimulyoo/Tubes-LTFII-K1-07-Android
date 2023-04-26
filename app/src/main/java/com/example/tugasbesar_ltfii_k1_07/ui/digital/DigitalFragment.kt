@@ -59,11 +59,11 @@ class DigitalFragment : Fragment() {
         val buttonDown = view.findViewById<ImageButton>(R.id.button_down)
 
         setTouchListener(buttonUp, 0f, 0f, dpadStepZ)
-        setTouchListener(buttonDown, 0f, 0f, -dpadStepXY)
-        setTouchListener(buttonLeft, 0f, -dpadStepXY, 0f)
-        setTouchListener(buttonRight, 0f, dpadStepXY, 0f)
-        setTouchListener(buttonForward, dpadStepXY, 0f, 0f)
-        setTouchListener(buttonBackward, -dpadStepXY, 0f, 0f)
+        setTouchListener(buttonDown, 0f, 0f, -dpadStepZ)
+        setTouchListener(buttonLeft,  -dpadStepXY, 0f, 0f)
+        setTouchListener(buttonRight, dpadStepXY, 0f, 0f)
+        setTouchListener(buttonForward, 0f, dpadStepXY, 0f)
+        setTouchListener(buttonBackward, 0f, -dpadStepXY, 0f)
     }
 
     private fun setTouchListener(button: ImageButton, dx: Float, dy: Float, dz: Float) {
