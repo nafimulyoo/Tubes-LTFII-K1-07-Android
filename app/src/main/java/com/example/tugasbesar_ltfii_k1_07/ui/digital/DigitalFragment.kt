@@ -31,9 +31,20 @@ class DigitalFragment : Fragment() {
     val dpadStepXY = dpadSpeedXY * dpadInterval / 1000f
     val dpadStepZ = dpadSpeedZ * dpadInterval / 1000f
 
-
-    // Coroutine Job for managing loops
+    private var dx = 0f
+    private var dy = 0f
+    private var dz = 0f
     private var dpadJob: Job? = null
+
+    private lateinit var buttonLeft: ImageButton
+    private lateinit var buttonRight: ImageButton
+    private lateinit var buttonBackward: ImageButton
+    private lateinit var buttonForward: ImageButton
+    private lateinit var buttonUp: ImageButton
+    private lateinit var buttonDown: ImageButton
+
+
+    private val pressedButtons = mutableListOf<ImageButton>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,44 +62,80 @@ class DigitalFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        val buttonLeft = view.findViewById<ImageButton>(R.id.button_left)
-        val buttonRight = view.findViewById<ImageButton>(R.id.button_right)
-        val buttonBackward = view.findViewById<ImageButton>(R.id.button_backward)
-        val buttonForward = view.findViewById<ImageButton>(R.id.button_forward)
-        val buttonUp = view.findViewById<ImageButton>(R.id.button_up)
-        val buttonDown = view.findViewById<ImageButton>(R.id.button_down)
+        buttonLeft = view.findViewById<ImageButton>(R.id.button_left)
+        buttonRight = view.findViewById<ImageButton>(R.id.button_right)
+        buttonBackward = view.findViewById<ImageButton>(R.id.button_backward)
+        buttonForward = view.findViewById<ImageButton>(R.id.button_forward)
+        buttonUp = view.findViewById<ImageButton>(R.id.button_up)
+        buttonDown = view.findViewById<ImageButton>(R.id.button_down)
 
-        setTouchListener(buttonUp, 0f, 0f, dpadStepZ)
-        setTouchListener(buttonDown, 0f, 0f, -dpadStepZ)
-        setTouchListener(buttonLeft,  -dpadStepXY, 0f, 0f)
-        setTouchListener(buttonRight, dpadStepXY, 0f, 0f)
-        setTouchListener(buttonForward, 0f, dpadStepXY, 0f)
-        setTouchListener(buttonBackward, 0f, -dpadStepXY, 0f)
+        setTouchListener(buttonUp)
+        setTouchListener(buttonDown)
+        setTouchListener(buttonLeft)
+        setTouchListener(buttonRight)
+        setTouchListener(buttonForward)
+        setTouchListener(buttonBackward)
     }
 
-    private fun setTouchListener(button: ImageButton, dx: Float, dy: Float, dz: Float) {
+    private fun setTouchListener(button: ImageButton) {
         button.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    dpadJob?.cancel()
-                    dpadJob = CoroutineScope(Dispatchers.Main).launch {
-                        while (true) {
-                            // Replace sendMessage with your actual sendMessage function
-                            esp32.sendMessage("JOYSTICK $dx $dy $dz")
-                            delay(dpadInterval)
-                        }
-                    }
+                    pressedButtons.add(button)
+                    updateDxDyDz()
+                    startDpadJob()
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    dpadJob?.cancel()
+                    pressedButtons.remove(button)
+                    updateDxDyDz()
+
+                    if (pressedButtons.isEmpty()) {
+                        stopDpadJob()
+                    } else {
+                        // Do nothing
+                    }
                 }
             }
             true
         }
     }
 
+
+    private fun updateDxDyDz() {
+        dx = 0f
+        dy = 0f
+        dz = 0f
+
+        for (button in pressedButtons) {
+            when (button) {
+                buttonUp -> dz += dpadStepZ
+                buttonDown -> dz -= dpadStepZ
+                buttonLeft -> dx -= dpadStepXY
+                buttonRight -> dx += dpadStepXY
+                buttonForward -> dy += dpadStepXY
+                buttonBackward -> dy -= dpadStepXY
+            }
+        }
+    }
+
+    private fun startDpadJob() {
+        dpadJob?.cancel()
+        dpadJob = CoroutineScope(Dispatchers.Main).launch {
+            while (true) {
+                esp32.sendMessage("JOYSTICK $dx $dy $dz")
+                delay(dpadInterval)
+            }
+        }
+    }
+
+    private fun stopDpadJob() {
+        dpadJob?.cancel()
+        dpadJob = null
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        dpadJob?.cancel()
         _binding = null
     }
 }
